@@ -1,11 +1,36 @@
+import javafx.application.Platform
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.geometry.Orientation
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
+import javafx.stage.Stage
+import org.jnativehook.GlobalScreen
 import tornadofx.*
+import utils.LaunchListener
+import java.awt.TrayIcon
 
-class MyApp : App(MyView::class)
+
+class MyApp: App(MyView::class) {
+    private lateinit var trayIcon: TrayIcon
+    private var isPressed = false
+
+    override fun start(stage: Stage) {
+        super.start(stage)
+
+        // Don't exit on window close (Optional)
+        Platform.setImplicitExit(false)
+
+        GlobalScreen.registerNativeHook()
+        GlobalScreen.addNativeKeyListener(LaunchListener())
+    }
+
+    override fun stop() {
+        GlobalScreen.unregisterNativeHook()
+    }
+}
+
+//class MyApp : App(MyView::class)
 
 /**
  * 1. We need to index data/files
@@ -16,6 +41,7 @@ class MyApp : App(MyView::class)
  */
 class MyView : View() {
     private val controller = MyController()
+
     override val root = vbox {
         form {
             fieldset(labelPosition = Orientation.VERTICAL) {
@@ -45,10 +71,9 @@ class MyView : View() {
 class MyController : Controller() {
     val keyword = SimpleStringProperty()
     val searchResults = FXCollections.observableArrayList("Alpha", "Beta", "Gamma", "Delta")
-
 }
 
 fun main(args: Array<String>) {
     println(OperativeSystemHelper.showProperties())
-    //launch<MyApp>(args)
+    launch<MyApp>(args)
 }

@@ -12,7 +12,9 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+
     implementation("no.tornado:tornadofx:1.7.17")
+    implementation("com.1stleg:jnativehook:2.1.0")
 }
 
 tasks {
